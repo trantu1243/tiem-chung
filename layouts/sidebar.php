@@ -92,6 +92,25 @@ $current_page = basename($_SERVER['PHP_SELF']);
                        
                     </ul>
                 </li>
+
+                <li class="nav-item <?php echo ($current_page == 'hoadon.php') ? 'menu-open' : ''; ?>">
+                    <a href="#" class="nav-link <?php echo ($current_page == 'hoadon.php') ? 'active' : ''; ?>">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            Hóa đơn
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="hoadon.php" class="nav-link <?php echo ($current_page == 'hoadon.php') ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Tất cả</p>
+                            </a>
+                        </li>
+                       
+                    </ul>
+                </li>
                 
                 <li class="nav-header">ACTIONS</li>
                 <li class="nav-item">
