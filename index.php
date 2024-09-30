@@ -7,7 +7,44 @@ include 'layouts/header.php';
 
 require 'db.php';
 
-$stmt = $conn->prepare("SELECT * FROM vaccinations WHERE `delete` = 0");
+$name = isset($_GET['name']) ? $_GET['name'] : null;
+$vaccine = isset($_GET['vaccine']) ? $_GET['vaccine'] : null;
+$price = isset($_GET['price']) ? $_GET['price'] : null;
+
+$conditions = [];
+if (!empty($name)) {
+    $conditions[] = "name LIKE '%" . mysqli_real_escape_string($conn, $name) . "%'";
+}
+if (!empty($vaccine)) {
+    $conditions[] = "vaccine LIKE '%" . mysqli_real_escape_string($conn, $vaccine) . "%'";
+}
+if (!empty($price)) {
+    switch ($price) {
+        case 1:
+            $conditions[] = "price BETWEEN 0 AND 500000";
+            break;
+        case 2:
+            $conditions[] = "price BETWEEN 500000 AND 1000000";
+            break;
+        case 3:
+            $conditions[] = "price BETWEEN 1000000 AND 1500000";
+            break;
+        case 4:
+            $conditions[] = "price BETWEEN 1500000 AND 2000000";
+            break;
+        case 5:
+            $conditions[] = "price > 2000000";
+            break;
+    }
+}
+
+$sql = "SELECT * FROM vaccinations WHERE `delete` = 0";
+if (count($conditions) > 0) {
+    $sql .= " AND " . implode(' AND ', $conditions);
+}
+
+$stmt = $conn->prepare($sql);
+
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -38,6 +75,47 @@ while ($row = $result->fetch_assoc()) {
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="" method="get">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="name">Tìm theo bệnh</label>
+                                            <input name="name" type="text" class="form-control" id="name" value="<?= htmlspecialchars($name ?? '') ?>" placeholder="Search" autocomplete="none">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="vaccine">Tìm theo vắc xin</label>
+                                            <input name="vaccine" type="text" class="form-control" id="vaccine" value="<?= htmlspecialchars($vaccine ?? '') ?>" placeholder="Search" autocomplete="none">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="price">Giá</label>
+                                            <select class="form-control" name="price">
+                                                <option value="">-- Lựa chọn giá --</option>
+                                                <option value="1" <?= ($price ?? 0) == 1 ? 'selected' : ''; ?>>0 - 500.000</option>
+                                                <option value="2" <?= ($price ?? 0) == 2 ? 'selected' : ''; ?>>500.000 - 1.000.000 </option>
+                                                <option value="3" <?= ($price ?? 0) == 3 ? 'selected' : ''; ?>>1.000.000 - 1.500.000</option>
+                                                <option value="4" <?= ($price ?? 0) == 4 ? 'selected' : ''; ?>>1.500.000 - 2.000.000</option>
+                                                <option value="5" <?= ($price ?? 0) == 5 ? 'selected' : ''; ?>> > 2.000.000 </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-right">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                 <div class="card">
